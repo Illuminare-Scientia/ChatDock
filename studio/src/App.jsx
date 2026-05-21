@@ -4,10 +4,14 @@ import ChatPreview from './components/ChatPreview.jsx';
 import CodeOutput from './components/CodeOutput.jsx';
 
 const SIDEBAR_STORAGE_KEY = 'chatdock-studio-sidebar-width';
-const SIDEBAR_DEFAULT_WIDTH = 300;
 const SIDEBAR_MIN_WIDTH = 260;
 const SIDEBAR_MAX_WIDTH = 520;
 const MAIN_MIN_WIDTH = 480;
+
+function getSidebarDefaultWidth() {
+  if (typeof window === 'undefined') return 300;
+  return Math.round(window.innerWidth * 0.3);
+}
 
 const SPLIT_STORAGE_KEY = 'chatdock-studio-split-height';
 const SPLIT_DEFAULT_HEIGHT = 340;
@@ -45,10 +49,10 @@ function clampSidebarWidth(width) {
 }
 
 function getInitialSidebarWidth() {
-  if (typeof window === 'undefined') return SIDEBAR_DEFAULT_WIDTH;
+  if (typeof window === 'undefined') return 300;
 
   const storedWidth = Number(window.localStorage.getItem(SIDEBAR_STORAGE_KEY));
-  if (!Number.isFinite(storedWidth)) return SIDEBAR_DEFAULT_WIDTH;
+  if (!Number.isFinite(storedWidth)) return clampSidebarWidth(getSidebarDefaultWidth());
 
   return clampSidebarWidth(storedWidth);
 }
