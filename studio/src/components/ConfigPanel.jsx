@@ -111,7 +111,7 @@ export default function ConfigPanel({ config, onChange }) {
   return (
     <div className="config-panel">
       <div className="config-panel-header">
-        <img className="studio-logo" src="/chatdock-studio-logo.svg" alt="ChatDock Studio" />
+        <img className="studio-logo" src={`${import.meta.env.BASE_URL}chatdock-studio-logo.svg`} alt="ChatDock Studio" />
       </div>
 
       {/* ── Basic ── */}
