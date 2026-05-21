@@ -112,7 +112,7 @@
       this._starterPromptsUsed = false;
 
       this._ensureMarkdownLibs();
-      this._loadMultimodalRenderer();
+      if (this.multimodalRendererUrl) this._loadMultimodalRenderer();
       this._createStyles();
       this._buildUI();
 
@@ -629,8 +629,9 @@
 
     async _loadMultimodalRenderer() {
       if (this.multimodalRenderer) return this.multimodalRenderer;
+      if (!this.multimodalRendererUrl) return null;
       if (!this.multimodalRendererReady) {
-        const url = this.multimodalRendererUrl || '/chatdock.multimodal.js';
+        const url = this.multimodalRendererUrl;
         this.multimodalRendererReady = import(url)
           .then((mod) => { this.multimodalRenderer = mod; return mod; })
           .catch(() => null);
