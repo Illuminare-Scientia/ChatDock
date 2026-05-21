@@ -40,7 +40,7 @@ jobs:
         working-directory: studio
 
       - name: Build
-        run: pnpm build --base=/ChatDock/
+        run: pnpm build
         working-directory: studio
 
       - name: Setup Pages
