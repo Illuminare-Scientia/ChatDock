@@ -85,8 +85,14 @@ body { margin: 0; overflow: hidden; height: 100dvh; }
   cursor: col-resize;
 }
 
+.app-layout.split-resizing {
+  cursor: row-resize;
+}
+
 .app-layout.resizing .sidebar,
-.app-layout.resizing .main-area {
+.app-layout.resizing .main-area,
+.app-layout.split-resizing .preview-pane,
+.app-layout.split-resizing .code-pane {
   user-select: none;
 }
 
@@ -107,10 +113,45 @@ body { margin: 0; overflow: hidden; height: 100dvh; }
 }
 
 .code-pane {
-  flex: 0 0 340px;
+  flex: 0 0 var(--split-height);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.split-resizer {
+  height: 9px;
+  flex: 0 0 9px;
+  margin-top: -4px;
+  margin-bottom: -5px;
+  background: transparent;
+  border: 0;
+  cursor: row-resize;
+  position: relative;
+  z-index: 20;
+  touch-action: none;
+}
+
+.split-resizer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 1px;
+  background: var(--sidebar-border);
+  transition: background .15s, box-shadow .15s;
+}
+
+.split-resizer:hover::after,
+.split-resizer:focus-visible::after,
+.split-resizer.active::after {
+  background: var(--accent-hover);
+  box-shadow: 0 0 0 1px rgba(56, 139, 253, 0.32);
+}
+
+.split-resizer:focus-visible {
+  outline: none;
 }
 
 /* ─── Config Panel ──────────────────────────────────────────────────────────── */

@@ -9,6 +9,29 @@ const SIDEBAR_MIN_WIDTH = 260;
 const SIDEBAR_MAX_WIDTH = 520;
 const MAIN_MIN_WIDTH = 480;
 
+const SPLIT_STORAGE_KEY = 'chatdock-studio-split-height';
+const SPLIT_DEFAULT_HEIGHT = 340;
+const SPLIT_MIN_HEIGHT = 120;
+const SPLIT_MAX_HEIGHT = 640;
+
+function clampSplitHeight(height) {
+  if (typeof window === 'undefined') return SPLIT_DEFAULT_HEIGHT;
+  const max = Math.max(SPLIT_MIN_HEIGHT, Math.min(SPLIT_MAX_HEIGHT, window.innerHeight - 160));
+  return Math.min(Math.max(height, SPLIT_MIN_HEIGHT), max);
+}
+
+function getInitialSplitHeight() {
+  if (typeof window === 'undefined') return SPLIT_DEFAULT_HEIGHT;
+  const stored = Number(window.localStorage.getItem(SPLIT_STORAGE_KEY));
+  if (!Number.isFinite(stored)) return SPLIT_DEFAULT_HEIGHT;
+  return clampSplitHeight(stored);
+}
+
+function saveSplitHeight(height) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(SPLIT_STORAGE_KEY, String(Math.round(height)));
+}
+
 function getMaxSidebarWidth() {
   if (typeof window === 'undefined') return SIDEBAR_MAX_WIDTH;
   return Math.max(
@@ -72,6 +95,8 @@ export default function App() {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [sidebarWidth, setSidebarWidth] = useState(getInitialSidebarWidth);
   const [isResizing, setIsResizing] = useState(false);
+  const [splitHeight, setSplitHeight] = useState(getInitialSplitHeight);
+  const [isSplitResizing, setIsSplitResizing] = useState(false);
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -123,6 +148,60 @@ export default function App() {
     window.addEventListener('pointercancel', handlePointerUp);
   };
 
+  const handleSplitResizeStart = (event) => {
+    event.preventDefault();
+
+    const startY = event.clientY;
+    const startHeight = splitHeight;
+    let nextHeight = splitHeight;
+
+    setIsSplitResizing(true);
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+
+    const handlePointerMove = (moveEvent) => {
+      nextHeight = clampSplitHeight(startHeight - (moveEvent.clientY - startY));
+      setSplitHeight(nextHeight);
+    };
+
+    const handlePointerUp = () => {
+      setIsSplitResizing(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      saveSplitHeight(nextHeight);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+  };
+
+  const handleSplitResizeKeyDown = (event) => {
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      const next = clampSplitHeight(splitHeight + 16);
+      setSplitHeight(next); saveSplitHeight(next);
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      const next = clampSplitHeight(splitHeight - 16);
+      setSplitHeight(next); saveSplitHeight(next);
+    }
+    if (event.key === 'Home') {
+      event.preventDefault();
+      const next = SPLIT_MIN_HEIGHT;
+      setSplitHeight(next); saveSplitHeight(next);
+    }
+    if (event.key === 'End') {
+      event.preventDefault();
+      const next = clampSplitHeight(SPLIT_MAX_HEIGHT);
+      setSplitHeight(next); saveSplitHeight(next);
+    }
+  };
+
   const handleResizeKeyDown = (event) => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
@@ -147,8 +226,8 @@ export default function App() {
 
   return (
     <div
-      className={`app-layout ${isResizing ? 'resizing' : ''}`}
-      style={{ '--sidebar-width': `${sidebarWidth}px` }}
+      className={`app-layout ${isResizing ? 'resizing' : ''} ${isSplitResizing ? 'split-resizing' : ''}`}
+      style={{ '--sidebar-width': `${sidebarWidth}px`, '--split-height': `${splitHeight}px` }}
     >
       {/* Left: Config Panel */}
       <aside className="sidebar">
@@ -172,6 +251,18 @@ export default function App() {
         <div className="preview-pane">
           <ChatPreview config={config} />
         </div>
+        <div
+          className={`split-resizer ${isSplitResizing ? 'active' : ''}`}
+          role="separator"
+          aria-label="Resize code panel"
+          aria-orientation="horizontal"
+          aria-valuemin={SPLIT_MIN_HEIGHT}
+          aria-valuemax={SPLIT_MAX_HEIGHT}
+          aria-valuenow={Math.round(splitHeight)}
+          tabIndex={0}
+          onPointerDown={handleSplitResizeStart}
+          onKeyDown={handleSplitResizeKeyDown}
+        />
         <div className="code-pane">
           <CodeOutput config={config} />
         </div>
