@@ -4,7 +4,7 @@ import ChatPreview from './components/ChatPreview.jsx';
 import CodeOutput from './components/CodeOutput.jsx';
 
 const SIDEBAR_STORAGE_KEY = 'chatdock-studio-sidebar-width';
-const SIDEBAR_MIN_WIDTH = 300;
+const SIDEBAR_MIN_WIDTH = 301;
 const SIDEBAR_MAX_WIDTH = 520;
 const MAIN_MIN_WIDTH = 480;
 
