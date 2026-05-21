@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">ChatDock Studio mark</title>
+  <desc id="desc">A chat bubble docked into a compact studio tray.</desc>
+  <defs>
+    <linearGradient id="bubble" x1="14" y1="14" x2="80" y2="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5eead4"/>
+      <stop offset="0.54" stop-color="#2f81f7"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="dock" x1="18" y1="68" x2="78" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="shadow" x="6" y="8" width="84" height="84" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#020617" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="96" height="96" rx="24" fill="#0d1117"/>
+  <g filter="url(#shadow)">
+    <path d="M24 18h48c5.5 0 10 4.5 10 10v29c0 5.5-4.5 10-10 10H47.5L29.2 81.4c-2.1 1.7-5.2.2-5.2-2.5V67c-5.5 0-10-4.5-10-10V28c0-5.5 4.5-10 10-10Z" fill="url(#bubble)"/>
+    <path d="M30 66h36c5.5 0 10 4.5 10 10v2c0 2.8-2.2 5-5 5H25c-2.8 0-5-2.2-5-5v-2c0-5.5 4.5-10 10-10Z" fill="url(#dock)"/>
+    <path d="M31 37h28c2.2 0 4 1.8 4 4s-1.8 4-4 4H31c-2.2 0-4-1.8-4-4s1.8-4 4-4Zm0 15h17c2.2 0 4 1.8 4 4s-1.8 4-4 4H31c-2.2 0-4-1.8-4-4s1.8-4 4-4Z" fill="#ffffff" opacity="0.92"/>
+    <circle cx="67" cy="41" r="4" fill="#ffffff"/>
+  </g>
+</svg>

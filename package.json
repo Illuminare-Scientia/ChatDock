@@ -1,0 +1,13 @@
+{
+  "name": "chatdock",
+  "version": "1.0.0",
+  "description": "Lightweight embeddable chat widget + visual builder studio. Fully compatible with iBlueprint API endpoints.",
+  "main": "chatdock.js",
+  "files": ["chatdock.js"],
+  "scripts": {
+    "studio": "cd studio && pnpm install && pnpm dev",
+    "studio:build": "cd studio && pnpm build"
+  },
+  "keywords": ["chatbot", "chat-widget", "iblueprint", "embeddable", "chatdock"],
+  "license": "MIT"
+}

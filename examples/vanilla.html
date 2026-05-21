@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatDock - Floating Widget Example</title>
+
+  <!-- Load ChatDock -->
+  <script src="../chatdock.js"></script>
+</head>
+<body style="font-family: system-ui, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+
+  <h1>ChatDock Floating Widget</h1>
+  <p>The chat bubble appears in the bottom-right corner. Click it to open.</p>
+  <p>This uses <strong>floating mode</strong> which renders a toggle button.</p>
+
+  <script>
+    new ChatDock({
+      chatId: 'your-chat-id',
+      apiEndpoint: 'https://your-api.com/api/chat/your-chat-id',
+      title: 'Support Chat',
+      inline: false, // floating mode
+      initialMessage: 'Hello! How can I help you today?',
+      legalMessage: 'AI can make mistakes. Please verify important information.',
+      starterPrompts: [
+        'What can you help me with?',
+        'Tell me more',
+      ],
+      dimensions: {
+        width: '380px',
+        height: '520px',
+      },
+      theme: {
+        primaryColor: '#1f6feb',
+        textColor: '#ffffff',
+        bannerColor: '#1f6feb',
+        chatBackground: '#f9f9f9',
+        userMessageBg: '#1f6feb',
+        botMessageBg: '#e9e9e9',
+      },
+    });
+  </script>
+
+  <!-- iBlueprint compatibility note:
+    ChatDock is fully compatible with iBlueprint API.
+    You can also use:
+      new IBlueprintChat({ ... })
+    as window.IBlueprintChat is aliased to ChatDock.
+  -->
+
+</body>
+</html>
