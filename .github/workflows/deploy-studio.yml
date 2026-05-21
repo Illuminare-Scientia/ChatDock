@@ -36,7 +36,7 @@ jobs:
           cache-dependency-path: studio/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --config.minimum-release-age=0
         working-directory: studio
 
       - name: Build
