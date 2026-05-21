@@ -70,7 +70,7 @@ export default function ChatPreview({ config }) {
 
   // Load chatdock.js source once
   useEffect(() => {
-    fetch('/chatdock.js')
+    fetch(`${import.meta.env.BASE_URL}chatdock.js`)
       .then((r) => {
         if (!r.ok) throw new Error(`Failed to load chatdock.js (${r.status})`);
         return r.text();
