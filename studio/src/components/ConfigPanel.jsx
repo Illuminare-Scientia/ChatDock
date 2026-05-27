@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import IBlueprintLogin from './IBlueprintLogin.jsx';
 
 const FONT_OPTIONS = [
   { label: 'System UI', value: 'system-ui, -apple-system, sans-serif' },
@@ -95,7 +96,7 @@ function ColorField({ label, value, onChange }) {
   );
 }
 
-export default function ConfigPanel({ config, onChange }) {
+export default function ConfigPanel({ config, onChange, onDeploymentSelect }) {
   const set = (path, value) => {
     const keys = path.split('.');
     const next = { ...config };
@@ -113,6 +114,9 @@ export default function ConfigPanel({ config, onChange }) {
       <div className="config-panel-header">
         <img className="studio-logo" src={`${import.meta.env.BASE_URL}chatdock-studio-logo.svg`} alt="ChatDock Studio" />
       </div>
+
+      {/* ── iBlueprint Login ── */}
+      <IBlueprintLogin config={config} onDeploymentSelect={onDeploymentSelect} />
 
       {/* ── Basic ── */}
       <Section title="Connection">
