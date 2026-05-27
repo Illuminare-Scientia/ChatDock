@@ -65,6 +65,7 @@ function saveSidebarWidth(width) {
 const DEFAULT_CONFIG = {
   chatId: 'demo-chat-id',
   apiEndpoint: 'https://your-api.com/api/chat/demo-chat-id',
+  deploymentId: '',
   title: 'ChatDock Widget',
   authToken: '',
   inline: true,
@@ -98,6 +99,18 @@ const DEFAULT_CONFIG = {
 export default function App() {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [sidebarWidth, setSidebarWidth] = useState(getInitialSidebarWidth);
+
+  // Merge a deployment's config on top of current config, preserving any keys
+  // the deployment doesn't provide (e.g. inline display mode preference).
+  const handleDeploymentSelect = (deploymentConfig) => {
+    setConfig((prev) => ({
+      ...prev,
+      ...deploymentConfig,
+      theme: { ...prev.theme, ...deploymentConfig.theme },
+      dimensions: { ...prev.dimensions, ...deploymentConfig.dimensions },
+      exportOptions: { ...prev.exportOptions, ...deploymentConfig.exportOptions },
+    }));
+  };
   const [isResizing, setIsResizing] = useState(false);
   const [splitHeight, setSplitHeight] = useState(getInitialSplitHeight);
   const [isSplitResizing, setIsSplitResizing] = useState(false);
@@ -124,9 +137,13 @@ export default function App() {
   const handleResizeStart = (event) => {
     event.preventDefault();
 
+    const el = event.currentTarget;
+    el.setPointerCapture(event.pointerId);
+
     const startX = event.clientX;
     const startWidth = sidebarWidth;
-    let nextWidth = sidebarWidth;
+    let nextWidth = startWidth;
+    let rafId = null;
 
     setIsResizing(true);
     document.body.style.cursor = 'col-resize';
@@ -134,30 +151,40 @@ export default function App() {
 
     const handlePointerMove = (moveEvent) => {
       nextWidth = clampSidebarWidth(startWidth + moveEvent.clientX - startX);
-      setSidebarWidth(nextWidth);
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        setSidebarWidth(nextWidth);
+      });
     };
 
     const handlePointerUp = () => {
+      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
       setIsResizing(false);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
+      setSidebarWidth(nextWidth);
       saveSidebarWidth(nextWidth);
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+      el.removeEventListener('pointermove', handlePointerMove);
+      el.removeEventListener('pointerup', handlePointerUp);
+      el.removeEventListener('pointercancel', handlePointerUp);
     };
 
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
+    el.addEventListener('pointermove', handlePointerMove);
+    el.addEventListener('pointerup', handlePointerUp);
+    el.addEventListener('pointercancel', handlePointerUp);
   };
 
   const handleSplitResizeStart = (event) => {
     event.preventDefault();
 
+    const el = event.currentTarget;
+    el.setPointerCapture(event.pointerId);
+
     const startY = event.clientY;
     const startHeight = splitHeight;
-    let nextHeight = splitHeight;
+    let nextHeight = startHeight;
+    let rafId = null;
 
     setIsSplitResizing(true);
     document.body.style.cursor = 'row-resize';
@@ -165,22 +192,28 @@ export default function App() {
 
     const handlePointerMove = (moveEvent) => {
       nextHeight = clampSplitHeight(startHeight - (moveEvent.clientY - startY));
-      setSplitHeight(nextHeight);
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        setSplitHeight(nextHeight);
+      });
     };
 
     const handlePointerUp = () => {
+      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
       setIsSplitResizing(false);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
+      setSplitHeight(nextHeight);
       saveSplitHeight(nextHeight);
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+      el.removeEventListener('pointermove', handlePointerMove);
+      el.removeEventListener('pointerup', handlePointerUp);
+      el.removeEventListener('pointercancel', handlePointerUp);
     };
 
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
+    el.addEventListener('pointermove', handlePointerMove);
+    el.addEventListener('pointerup', handlePointerUp);
+    el.addEventListener('pointercancel', handlePointerUp);
   };
 
   const handleSplitResizeKeyDown = (event) => {
@@ -235,7 +268,7 @@ export default function App() {
     >
       {/* Left: Config Panel */}
       <aside className="sidebar">
-        <ConfigPanel config={config} onChange={setConfig} />
+        <ConfigPanel config={config} onChange={setConfig} onDeploymentSelect={handleDeploymentSelect} />
       </aside>
       <div
         className={`sidebar-resizer ${isResizing ? 'active' : ''}`}
